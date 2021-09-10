@@ -13,14 +13,14 @@ public class ReizigerDAOPsql implements ReizigerDAO{
 
     @Override
     public void save(Reiziger reiziger) throws SQLException {
-        PreparedStatement st = conn.prepareStatement("INSERT INTO reiziger (reiziger_id, voorletters, tussenvoegsel, achternaam, geboortedatum) " +
+        PreparedStatement ps = conn.prepareStatement("INSERT INTO reiziger (reiziger_id, voorletters, tussenvoegsel, achternaam, geboortedatum) " +
                 "VALUES (?, ?, ?, ?, ?)");
-        st.setInt(1, reiziger.getId());
-        st.setString(2, reiziger.getVoorletters());
-        st.setString(3, reiziger.getTussenvoegsel());
-        st.setString(4, reiziger.getAchternaam());
-        st.setDate(5, reiziger.getGeboortedatum());
-        st.executeUpdate();
+        ps.setInt(1, reiziger.getId());
+        ps.setString(2, reiziger.getVoorletters());
+        ps.setString(3, reiziger.getTussenvoegsel());
+        ps.setString(4, reiziger.getAchternaam());
+        ps.setDate(5, reiziger.getGeboortedatum());
+        ps.executeUpdate();
     }
 
     @Override
@@ -108,5 +108,10 @@ public class ReizigerDAOPsql implements ReizigerDAO{
         catch(Exception e){
             return null;
         }
+    }
+
+    public String reizigerString(Reiziger reiziger, ReizigerDAOPsql reizigerDAOPsql) throws SQLException {
+        AdresDAOPsql aDAOPsql = new AdresDAOPsql(conn, reizigerDAOPsql);
+        return reiziger + aDAOPsql.findByReiziger(reiziger).toString();
     }
 }

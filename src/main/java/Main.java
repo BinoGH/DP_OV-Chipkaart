@@ -1,3 +1,5 @@
+import domein.Adres;
+import domein.AdresDAOPsql;
 import domein.Reiziger;
 import domein.ReizigerDAOPsql;
 
@@ -27,7 +29,38 @@ public class Main {
         rDAOPsql.update(r1);
         System.out.println("Alle reizigers na de update:\n" + (rDAOPsql.findAll()) + "\n");
 
+        AdresDAOPsql aDAOPsql = new AdresDAOPsql(conn, rDAOPsql);
+
+        System.out.println("\nAdres vinden met reiziger_id 2:");
+        System.out.println(aDAOPsql.findByReiziger(rDAOPsql.findById(2)));
+
+        System.out.println("\nAlle adressen:");
+        System.out.println(aDAOPsql.findAll());
+
+        Adres adres = new Adres(6, "1234zx", "12k",
+                "Dorpstraat", "Utrecht", 6);
+        aDAOPsql.save(adres);
+
+        System.out.println("\nAlle adressen na save:");
+        System.out.println(aDAOPsql.findAll());
+
+        adres.setStraat("Parklaan");
+        aDAOPsql.update(adres);
+
+        System.out.println("\nAlle adressen na update:");
+        System.out.println(aDAOPsql.findAll());
+
+        System.out.println("\ntoString via AdresDAOPsql:");
+        System.out.println(aDAOPsql.adresString(adres));
+
+        System.out.println("\ntoString via ReizigerDAOPsql:");
+        System.out.println(rDAOPsql.reizigerString(r1, rDAOPsql));
+
+        aDAOPsql.delete(adres);
+        System.out.println("\nAlle adressen na delete:");
+        System.out.println(aDAOPsql.findAll());
+
         rDAOPsql.delete(r1);
-        System.out.println("Alle reizigers na de delete:\n" + (rDAOPsql.findAll()));
+        System.out.println("\nAlle reizigers na de delete van reiziger 6:\n" + (rDAOPsql.findAll()));
     }
 }
