@@ -37,8 +37,9 @@ public class Main {
         System.out.println("\nAlle adressen:");
         System.out.println(aDAOPsql.findAll());
 
-        Adres adres = new Adres(6, "1234zx", "12k",
-                "Dorpstraat", "Utrecht", 6);
+        Adres adres = new Adres(6, "1234ZX", "12k",
+                "Dorpstraat", "Utrecht", r1);
+        r1.setAdres(adres);
         aDAOPsql.save(adres);
 
         System.out.println("\nAlle adressen na save:");
@@ -50,17 +51,16 @@ public class Main {
         System.out.println("\nAlle adressen na update:");
         System.out.println(aDAOPsql.findAll());
 
-        System.out.println("\ntoString via AdresDAOPsql:");
-        System.out.println(aDAOPsql.adresString(adres));
+        System.out.println("\ntoString via Adres:");
+        System.out.println(adres.toString());
 
-        System.out.println("\ntoString via ReizigerDAOPsql:");
-        System.out.println(rDAOPsql.reizigerString(r1, rDAOPsql));
-
-        aDAOPsql.delete(adres);
-        System.out.println("\nAlle adressen na delete:");
-        System.out.println(aDAOPsql.findAll());
+        System.out.println("\ntoString via Reiziger:");
+        System.out.println(r1.toString());
 
         rDAOPsql.delete(r1);
-        System.out.println("\nAlle reizigers na de delete van reiziger 6:\n" + (rDAOPsql.findAll()));
+        System.out.println("\nAlle reizigers na de delete van reiziger 6:\n" +
+                (rDAOPsql.findAll()) + "\n");
+        System.out.println("\nAlle adressen na delete:");
+        System.out.println(aDAOPsql.findAll());
     }
 }

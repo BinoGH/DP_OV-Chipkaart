@@ -13,8 +13,17 @@ public class AdresDAOPsql implements AdresDAO{
         this.rdao = rdao;
     }
 
+    public AdresDAOPsql(Connection conn){
+        this.conn = conn;
+    }
+
+    public void setRdao(ReizigerDAO rdao) {
+        this.rdao = rdao;
+    }
+
     public void save(Adres adres) throws SQLException{
-        PreparedStatement ps = conn.prepareStatement("INSERT INTO adres (adres_id, postcode, huisnummer, straat, woonplaats, reiziger_id)" +
+        PreparedStatement ps = conn.prepareStatement("INSERT INTO adres (adres_id, postcode, " +
+                "huisnummer, straat, woonplaats, reiziger_id)" +
                 "VALUES (?, ?, ?, ?, ?, ?)");
         ps.setInt(1, adres.getId());
         ps.setString(2, adres.getPostcode());
@@ -44,11 +53,18 @@ public class AdresDAOPsql implements AdresDAO{
     }
 
     public Adres findByReiziger(Reiziger reiziger) throws SQLException{
-        PreparedStatement ps = conn.prepareStatement("SELECT * FROM adres WHERE reiziger_id = ?");
-        ps.setInt(1, reiziger.getId());
-        ResultSet rs = ps.executeQuery();
-        rs.next();
-        return new Adres(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getInt(6));
+        ReizigerDAOPsql rdao = new ReizigerDAOPsql(conn);
+        try {
+            PreparedStatement ps = conn.prepareStatement("SELECT * FROM adres WHERE reiziger_id = ?");
+            ps.setInt(1, reiziger.getId());
+            ResultSet rs = ps.executeQuery();
+            rs.next();
+            return new Adres(rs.getInt(1), rs.getString(2),
+                    rs.getString(3), rs.getString(4),
+                    rs.getString(5), reiziger);
+        }catch (Exception e){
+            return null;
+        }
     }
 
     @Override
@@ -57,9 +73,10 @@ public class AdresDAOPsql implements AdresDAO{
         Statement st = conn.createStatement();
         try{
             ResultSet rs = st.executeQuery("SELECT * FROM adres");
+            ReizigerDAOPsql rdao = new ReizigerDAOPsql(conn);
             while (rs.next()){
                 Adres adres = new Adres(rs.getInt(1), rs.getString(2), rs.getString(3),
-                                rs.getString(4), rs.getString(5), rs.getInt(6));
+                                rs.getString(4), rs.getString(5), rdao.findById(rs.getInt(6)));
                 adressen.add(adres);
             }
             rs.close();
@@ -72,10 +89,5 @@ public class AdresDAOPsql implements AdresDAO{
         catch(Exception e){
             return null;
         }
-    }
-
-    public String adresString(Adres adres) throws SQLException {
-        ReizigerDAOPsql rDAOPsql = new ReizigerDAOPsql(conn);
-        return rDAOPsql.findById(adres.getId()).toString() + adres;
     }
 }

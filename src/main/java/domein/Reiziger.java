@@ -8,9 +8,10 @@ public class Reiziger{
     private String tussenvoegsel;
     private String achternaam;
     private Date geboortedatum;
-    private Adres adres;
+    private Adres adres = null;
 
-    public Reiziger(int id, String voorletters, String tussenvoegsel, String achternaam, Date geboortedatum){
+    public Reiziger(int id, String voorletters, String tussenvoegsel,
+                    String achternaam, Date geboortedatum){
         this.id = id;
         this.voorletters = voorletters;
         this.tussenvoegsel = tussenvoegsel;
@@ -71,6 +72,21 @@ public class Reiziger{
     }
 
     public String toString() {
+        if (adres != null) {
+            return "Reiziger{" +
+                    "id=" + id +
+                    ", voorletters='" + voorletters + '\'' +
+                    ", tussenvoegsel='" + tussenvoegsel + '\'' +
+                    ", achternaam='" + achternaam + '\'' +
+                    ", geboortedatum=" + geboortedatum +
+                    ", Adres{" +
+                    "id=" + id +
+                    ", postcode='" + adres.getPostcode() + '\'' +
+                    ", huisnummer='" + adres.getHuisnummer() + '\'' +
+                    ", straat='" + adres.getStraat() + '\'' +
+                    ", woonplaats='" + adres.getWoonplaats() + '\'' +
+                    "}}";
+        }
         return "Reiziger{" +
                 "id=" + id +
                 ", voorletters='" + voorletters + '\'' +

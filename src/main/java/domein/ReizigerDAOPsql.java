@@ -6,9 +6,19 @@ import java.util.List;
 
 public class ReizigerDAOPsql implements ReizigerDAO{
     Connection conn;
+    AdresDAOPsql aDAOPsql;
 
     public ReizigerDAOPsql(Connection conn){
         this.conn = conn;
+    }
+
+    public ReizigerDAOPsql(Connection conn, AdresDAOPsql aDAOPsql){
+        this.conn = conn;
+        this.aDAOPsql = aDAOPsql;
+    }
+
+    public void setaDAOPsql(AdresDAOPsql aDAOPsql) {
+        this.aDAOPsql = aDAOPsql;
     }
 
     @Override
@@ -21,6 +31,9 @@ public class ReizigerDAOPsql implements ReizigerDAO{
         ps.setString(4, reiziger.getAchternaam());
         ps.setDate(5, reiziger.getGeboortedatum());
         ps.executeUpdate();
+        if (reiziger.getAdres() != null){
+            AdresDAOPsql adaop = new AdresDAOPsql(conn);
+            adaop.save(reiziger.getAdres());}
     }
 
     @Override
@@ -33,10 +46,16 @@ public class ReizigerDAOPsql implements ReizigerDAO{
         ps.setDate(4, reiziger.getGeboortedatum());
         ps.setInt(5, reiziger.getId());
         ps.executeUpdate();
+        if (reiziger.getAdres() != null){
+            AdresDAOPsql adaop = new AdresDAOPsql(conn);
+            adaop.update(reiziger.getAdres());}
     }
 
     @Override
     public void delete(Reiziger reiziger) throws SQLException {
+        if (reiziger.getAdres() != null){
+            AdresDAOPsql adaop = new AdresDAOPsql(conn);
+            adaop.delete(reiziger.getAdres());}
         PreparedStatement ps = conn.prepareStatement("DELETE FROM reiziger WHERE reiziger_id = ?");
         ps.setInt(1, reiziger.getId());
         ps.executeUpdate();
@@ -54,6 +73,9 @@ public class ReizigerDAOPsql implements ReizigerDAO{
                 rs.getString(3),
                 rs.getString(4),
                 rs.getDate(5));
+            AdresDAOPsql adaop = new AdresDAOPsql(conn);
+            Adres adres = adaop.findByReiziger(reiziger);
+            reiziger.setAdres(adres);
             return reiziger;
         }
         catch(Exception e){
@@ -76,6 +98,10 @@ public class ReizigerDAOPsql implements ReizigerDAO{
                             rs.getDate(5));
                     reizigerList.add(reiziger);
                 }
+            }
+            for(Reiziger reiziger : reizigerList){
+                AdresDAOPsql adaop = new AdresDAOPsql(conn);
+                reiziger.setAdres(adaop.findByReiziger(reiziger));
             }
             return reizigerList;
         }
@@ -103,15 +129,14 @@ public class ReizigerDAOPsql implements ReizigerDAO{
             if (reizigerList.size() < 1){
                 throw new IllegalArgumentException();
             }
+            for(Reiziger reiziger : reizigerList){
+                AdresDAOPsql adaop = new AdresDAOPsql(conn);
+                reiziger.setAdres(adaop.findByReiziger(reiziger));
+            }
             return reizigerList;
         }
         catch(Exception e){
             return null;
         }
-    }
-
-    public String reizigerString(Reiziger reiziger, ReizigerDAOPsql reizigerDAOPsql) throws SQLException {
-        AdresDAOPsql aDAOPsql = new AdresDAOPsql(conn, reizigerDAOPsql);
-        return reiziger + aDAOPsql.findByReiziger(reiziger).toString();
     }
 }
