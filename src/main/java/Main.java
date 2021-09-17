@@ -1,19 +1,22 @@
-import domein.Adres;
-import domein.AdresDAOPsql;
-import domein.Reiziger;
-import domein.ReizigerDAOPsql;
+import domein.*;
 
 import java.sql.*;
 import java.util.Properties;
 
 public class Main {
     public static void main(String[] args) throws SQLException {
+        testPrints(getConnection());
+    }
+
+    public static Connection getConnection() throws SQLException {
         String url = "jdbc:postgresql:ovchip";
         Properties props = new Properties();
         props.setProperty("user","postgres");
         props.setProperty("password","54321");
-        Connection conn = DriverManager.getConnection(url, props);
+        return DriverManager.getConnection(url, props);
+    }
 
+    public static void testPrints(Connection conn) throws SQLException {
         ReizigerDAOPsql rDAOPsql = new ReizigerDAOPsql(conn);
         System.out.println("Alle reizigers:\n" + (rDAOPsql.findAll()));
 
@@ -27,7 +30,7 @@ public class Main {
 
         r1.setAchternaam("Pietertje");
         rDAOPsql.update(r1);
-        System.out.println("Alle reizigers na de update:\n" + (rDAOPsql.findAll()) + "\n");
+        System.out.println("Alle reizigers na de update:\n" + (rDAOPsql.findAll()));
 
         AdresDAOPsql aDAOPsql = new AdresDAOPsql(conn, rDAOPsql);
 
@@ -52,15 +55,48 @@ public class Main {
         System.out.println(aDAOPsql.findAll());
 
         System.out.println("\ntoString via Adres:");
-        System.out.println(adres.toString());
+        System.out.println(adres);
 
         System.out.println("\ntoString via Reiziger:");
         System.out.println(r1.toString());
 
+        OVChipkaartDAOPsql ovcDAOPsql = new OVChipkaartDAOPsql(conn, rDAOPsql);
+
+        System.out.println("\nAlle ovchipkaarten voor de nieuwe kaart:");
+        System.out.println(ovcDAOPsql.findAll());
+
+        OVChipkaart ovChipkaart = new OVChipkaart(8, Date.valueOf("2030-04-08"), 2, 25.50, r1);
+        r1.addOVChipkaart(ovChipkaart);
+        ovcDAOPsql.save(ovChipkaart);
+
+        OVChipkaart ovChipkaart2 = new OVChipkaart(9, Date.valueOf("2025-05-07"), 1, 10.20, r1);
+        r1.addOVChipkaart(ovChipkaart2);
+        ovcDAOPsql.save(ovChipkaart2);
+
+        System.out.println("\nAlle ovchipkaarten na de nieuwe kaarten:");
+        System.out.println(ovcDAOPsql.findAll());
+
+        ovChipkaart.setKlasse(3);
+        ovcDAOPsql.update(ovChipkaart);
+
+        System.out.println("\nAlle ovchipkaarten na de update:");
+        System.out.println(ovcDAOPsql.findAll());
+
+        System.out.println("\nAlle ovchipkaarten van reiziger 6 (findByReiziger):");
+        System.out.println(ovcDAOPsql.findByReiziger(r1));
+
+        System.out.println("\ntoString van ovchipkaart:");
+        System.out.println(ovChipkaart);
+
+        System.out.println("\ntoString van Reiziger:");
+        System.out.println(r1);
+
         rDAOPsql.delete(r1);
         System.out.println("\nAlle reizigers na de delete van reiziger 6:\n" +
                 (rDAOPsql.findAll()) + "\n");
-        System.out.println("\nAlle adressen na delete:");
+        System.out.println("Alle adressen na delete:");
         System.out.println(aDAOPsql.findAll());
+        System.out.println("\nAlle ovchipkaarten na delete:");
+        System.out.println(ovcDAOPsql.findAll());
     }
 }

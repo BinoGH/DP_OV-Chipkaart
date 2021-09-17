@@ -1,6 +1,8 @@
 package domein;
 
 import java.sql.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Reiziger{
     private int id;
@@ -9,6 +11,7 @@ public class Reiziger{
     private String achternaam;
     private Date geboortedatum;
     private Adres adres = null;
+    private List<OVChipkaart> ovChipkaartList= new ArrayList<>();
 
     public Reiziger(int id, String voorletters, String tussenvoegsel,
                     String achternaam, Date geboortedatum){
@@ -71,8 +74,26 @@ public class Reiziger{
         this.adres = adres;
     }
 
+    public List<OVChipkaart> getOvChipkaartList() {
+        return ovChipkaartList;
+    }
+
+    public void setOvChipkaartList(List<OVChipkaart> ovChipkaartList) {
+        this.ovChipkaartList = ovChipkaartList;
+    }
+
+    public void addOVChipkaart(OVChipkaart ovchip){
+        ovChipkaartList.add(ovchip);
+    }
+
     public String toString() {
-        if (adres != null) {
+        StringBuilder ovchipInfo = new StringBuilder();
+        if (ovChipkaartList != null){
+            for (OVChipkaart ovchip : ovChipkaartList){
+                ovchipInfo.append("OVCHIP ").append(ovchip.getKaart_id()).append(" einddatum=")
+                        .append(ovchip.getEinddatum()).append(", saldo=").append(ovchip.getSaldo());
+        }}
+        if (adres != null && ovChipkaartList != null) {
             return "Reiziger{" +
                     "id=" + id +
                     ", voorletters='" + voorletters + '\'' +
@@ -85,6 +106,7 @@ public class Reiziger{
                     ", huisnummer='" + adres.getHuisnummer() + '\'' +
                     ", straat='" + adres.getStraat() + '\'' +
                     ", woonplaats='" + adres.getWoonplaats() + '\'' +
+                    ovchipInfo +
                     "}}";
         }
         return "Reiziger{" +

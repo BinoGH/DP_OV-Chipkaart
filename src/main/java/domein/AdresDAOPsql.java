@@ -75,8 +75,12 @@ public class AdresDAOPsql implements AdresDAO{
             ResultSet rs = st.executeQuery("SELECT * FROM adres");
             ReizigerDAOPsql rdao = new ReizigerDAOPsql(conn);
             while (rs.next()){
-                Adres adres = new Adres(rs.getInt(1), rs.getString(2), rs.getString(3),
-                                rs.getString(4), rs.getString(5), rdao.findById(rs.getInt(6)));
+                Adres adres = new Adres(rs.getInt(1),
+                        rs.getString(2),
+                        rs.getString(3),
+                        rs.getString(4),
+                        rs.getString(5),
+                        rdao.findById(rs.getInt(6)));
                 adressen.add(adres);
             }
             rs.close();

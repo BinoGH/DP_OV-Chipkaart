@@ -7,6 +7,7 @@ import java.util.List;
 public class ReizigerDAOPsql implements ReizigerDAO{
     Connection conn;
     AdresDAOPsql aDAOPsql;
+    OVChipkaartDAOPsql ovcDAOPsql;
 
     public ReizigerDAOPsql(Connection conn){
         this.conn = conn;
@@ -34,12 +35,19 @@ public class ReizigerDAOPsql implements ReizigerDAO{
         if (reiziger.getAdres() != null){
             AdresDAOPsql adaop = new AdresDAOPsql(conn);
             adaop.save(reiziger.getAdres());}
+        if (reiziger.getOvChipkaartList() != null){
+            for (OVChipkaart ovchip : reiziger.getOvChipkaartList()){
+                OVChipkaartDAOPsql ovChipkaartDAOPsql = new OVChipkaartDAOPsql(conn);
+                ovChipkaartDAOPsql.save(ovchip);
+            }
+        }
     }
 
     @Override
     public void update(Reiziger reiziger) throws SQLException {
         PreparedStatement ps = conn.prepareStatement(
-                "UPDATE reiziger SET voorletters = ?, tussenvoegsel = ?, achternaam = ?, geboortedatum = ? WHERE reiziger_id = ?");
+                "UPDATE reiziger SET voorletters = ?, tussenvoegsel = ?, " +
+                        "achternaam = ?, geboortedatum = ? WHERE reiziger_id = ?");
         ps.setString(1, reiziger.getVoorletters());
         ps.setString(2, reiziger.getTussenvoegsel());
         ps.setString(3, reiziger.getAchternaam());
@@ -49,6 +57,12 @@ public class ReizigerDAOPsql implements ReizigerDAO{
         if (reiziger.getAdres() != null){
             AdresDAOPsql adaop = new AdresDAOPsql(conn);
             adaop.update(reiziger.getAdres());}
+        if (reiziger.getOvChipkaartList() != null){
+            for (OVChipkaart ovchip : reiziger.getOvChipkaartList()){
+                OVChipkaartDAOPsql ovChipkaartDAOPsql = new OVChipkaartDAOPsql(conn);
+                ovChipkaartDAOPsql.save(ovchip);
+            }
+        }
     }
 
     @Override
@@ -56,6 +70,10 @@ public class ReizigerDAOPsql implements ReizigerDAO{
         if (reiziger.getAdres() != null){
             AdresDAOPsql adaop = new AdresDAOPsql(conn);
             adaop.delete(reiziger.getAdres());}
+        for (OVChipkaart ovchip : reiziger.getOvChipkaartList()){
+            OVChipkaartDAOPsql ovChipkaartDAOPsql = new OVChipkaartDAOPsql(conn);
+            ovChipkaartDAOPsql.delete(ovchip);
+        }
         PreparedStatement ps = conn.prepareStatement("DELETE FROM reiziger WHERE reiziger_id = ?");
         ps.setInt(1, reiziger.getId());
         ps.executeUpdate();
@@ -76,6 +94,9 @@ public class ReizigerDAOPsql implements ReizigerDAO{
             AdresDAOPsql adaop = new AdresDAOPsql(conn);
             Adres adres = adaop.findByReiziger(reiziger);
             reiziger.setAdres(adres);
+            OVChipkaartDAOPsql ovcdaop = new OVChipkaartDAOPsql(conn);
+            List<OVChipkaart> ovChipkaartList = ovcdaop.findByReiziger(reiziger);
+            reiziger.setOvChipkaartList(ovChipkaartList);
             return reiziger;
         }
         catch(Exception e){
@@ -102,6 +123,9 @@ public class ReizigerDAOPsql implements ReizigerDAO{
             for(Reiziger reiziger : reizigerList){
                 AdresDAOPsql adaop = new AdresDAOPsql(conn);
                 reiziger.setAdres(adaop.findByReiziger(reiziger));
+                OVChipkaartDAOPsql ovcdaop = new OVChipkaartDAOPsql(conn);
+                List<OVChipkaart> ovChipkaartList = ovcdaop.findByReiziger(reiziger);
+                reiziger.setOvChipkaartList(ovChipkaartList);
             }
             return reizigerList;
         }
@@ -132,6 +156,9 @@ public class ReizigerDAOPsql implements ReizigerDAO{
             for(Reiziger reiziger : reizigerList){
                 AdresDAOPsql adaop = new AdresDAOPsql(conn);
                 reiziger.setAdres(adaop.findByReiziger(reiziger));
+                OVChipkaartDAOPsql ovcdaop = new OVChipkaartDAOPsql(conn);
+                List<OVChipkaart> ovChipkaartList = ovcdaop.findByReiziger(reiziger);
+                reiziger.setOvChipkaartList(ovChipkaartList);
             }
             return reizigerList;
         }
