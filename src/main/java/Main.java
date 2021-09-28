@@ -18,6 +18,13 @@ public class Main {
 
     public static void testPrints(Connection conn) throws SQLException {
         ReizigerDAOPsql rDAOPsql = new ReizigerDAOPsql(conn);
+        AdresDAOPsql aDAOPsql = new AdresDAOPsql(conn, rDAOPsql);
+        OVChipkaartDAOPsql ovcDAOPsql = new OVChipkaartDAOPsql(conn, rDAOPsql);
+        rDAOPsql.setAdresDAOPsql(aDAOPsql);
+        rDAOPsql.setOvcDAOPsql(ovcDAOPsql);
+
+        // REIZIGER PRINTS
+
         System.out.println("Alle reizigers:\n" + (rDAOPsql.findAll()));
 
         System.out.println("\nReiziger vinden met GBD:\n" + (rDAOPsql.findByGbdatum("2002-09-17")));
@@ -32,7 +39,7 @@ public class Main {
         rDAOPsql.update(r1);
         System.out.println("Alle reizigers na de update:\n" + (rDAOPsql.findAll()));
 
-        AdresDAOPsql aDAOPsql = new AdresDAOPsql(conn, rDAOPsql);
+        // ADRES PRINTS
 
         System.out.println("\nAdres vinden met reiziger_id 2:");
         System.out.println(aDAOPsql.findByReiziger(rDAOPsql.findById(2)));
@@ -60,7 +67,7 @@ public class Main {
         System.out.println("\ntoString via Reiziger:");
         System.out.println(r1.toString());
 
-        OVChipkaartDAOPsql ovcDAOPsql = new OVChipkaartDAOPsql(conn, rDAOPsql);
+        // OV PRINTS
 
         System.out.println("\nAlle ovchipkaarten voor de nieuwe kaart:");
         System.out.println(ovcDAOPsql.findAll());
@@ -90,6 +97,8 @@ public class Main {
 
         System.out.println("\ntoString van Reiziger:");
         System.out.println(r1);
+
+        // EIND PRINTS
 
         rDAOPsql.delete(r1);
         System.out.println("\nAlle reizigers na de delete van reiziger 6:\n" +

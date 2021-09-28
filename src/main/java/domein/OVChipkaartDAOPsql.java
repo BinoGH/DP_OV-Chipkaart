@@ -13,10 +13,6 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO{
         this.rDAOPsql = rDAOPsql;
     }
 
-    public OVChipkaartDAOPsql(Connection conn){
-        this.conn = conn;
-    }
-
     public void save(OVChipkaart ovChipkaart) throws SQLException {
         PreparedStatement ps = conn.prepareStatement("INSERT INTO ov_chipkaart (kaart_nummer," +
                 "geldig_tot, klasse, saldo, reiziger_id)" +
@@ -51,7 +47,6 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO{
     @Override
     public List<OVChipkaart> findByReiziger(Reiziger reiziger) throws SQLException {
         List<OVChipkaart> ovChipkaartList = new ArrayList<>();
-        ReizigerDAOPsql rdao = new ReizigerDAOPsql(conn);
         Statement st = conn.createStatement();
         ResultSet rs = st.executeQuery("SELECT * FROM ov_chipkaart WHERE " +
                 "reiziger_id = " + reiziger.getId());
@@ -70,7 +65,6 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO{
 
     public List<OVChipkaart> findAll() throws SQLException{
         List<OVChipkaart> ovChipkaartList = new ArrayList<>();
-        ReizigerDAOPsql rdao = new ReizigerDAOPsql(conn);
         Statement st = conn.createStatement();
         ResultSet rs = st.executeQuery("SELECT * FROM ov_chipkaart");
         while (rs.next()){
@@ -78,7 +72,7 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO{
                     rs.getDate(2),
                     rs.getInt(3),
                     rs.getDouble(4),
-                    rdao.findById(rs.getInt(5)));
+                    rDAOPsql.findById(rs.getInt(5)));
             ovChipkaartList.add(ovChipkaart);
         }
         rs.close();
