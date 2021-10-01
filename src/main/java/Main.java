@@ -22,6 +22,9 @@ public class Main {
         OVChipkaartDAOPsql ovcDAOPsql = new OVChipkaartDAOPsql(conn, rDAOPsql);
         rDAOPsql.setAdresDAOPsql(aDAOPsql);
         rDAOPsql.setOvcDAOPsql(ovcDAOPsql);
+        ProductDAOPsql pDAOPsql = new ProductDAOPsql(conn);
+        pDAOPsql.setOvcDAOPsql(ovcDAOPsql);
+        ovcDAOPsql.setpDAOPsql(pDAOPsql);
 
         // REIZIGER PRINTS
 
@@ -97,6 +100,34 @@ public class Main {
 
         System.out.println("\ntoString van Reiziger:");
         System.out.println(r1);
+
+        // PRODUCT PRINTS
+
+        System.out.println("\nAlle Producten voor het nieuwe product:");
+        System.out.println(pDAOPsql.findAll());
+
+        Product product = new Product(7, "Weekkaart 2e klas",
+                "Een hele week onbeperkt reizen met de trein.", 150.00);
+        pDAOPsql.save(product);
+
+        ovChipkaart.addProduct(product);
+
+        System.out.println("\nAlle producten na het nieuwe product:");
+        System.out.println(pDAOPsql.findAll());
+
+        product.setBeschrijving("Twee weken onbeperkt reizen met het OV.");
+        pDAOPsql.update(product);
+
+        System.out.println("\nAlle producten na de update:");
+        System.out.println(pDAOPsql.findAll());
+
+        pDAOPsql.delete(product);
+
+        System.out.println("\nAlle producten na de delete:");
+        System.out.println(pDAOPsql.findAll());
+
+        System.out.println("\nAlle producten van kaart_id 35283:");
+        System.out.println(pDAOPsql.findByOVChipkaart(ovcDAOPsql.findById(35283)));
 
         // EIND PRINTS
 

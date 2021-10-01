@@ -7,10 +7,15 @@ import java.util.List;
 public class OVChipkaartDAOPsql implements OVChipkaartDAO{
     Connection conn;
     ReizigerDAOPsql rDAOPsql;
+    ProductDAOPsql pDAOPsql;
 
     public OVChipkaartDAOPsql(Connection conn, ReizigerDAOPsql rDAOPsql){
         this.conn = conn;
         this.rDAOPsql = rDAOPsql;
+    }
+
+    public void setpDAOPsql(ProductDAOPsql pDAOPsql) {
+        this.pDAOPsql = pDAOPsql;
     }
 
     public void save(OVChipkaart ovChipkaart) throws SQLException {
@@ -23,6 +28,11 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO{
         ps.setDouble(4, ovChipkaart.getSaldo());
         ps.setInt(5, ovChipkaart.getReiziger().getId());
         ps.executeUpdate();
+        if (ovChipkaart.getProductList() != null){
+            for(Product product : ovChipkaart.getProductList()){
+                pDAOPsql.save(product);
+            }
+        }
     }
 
     public void update(OVChipkaart ovChipkaart) throws SQLException{
@@ -42,6 +52,11 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO{
                 " kaart_nummer = ?");
         ps.setInt(1, ovChipkaart.getKaart_id());
         ps.executeUpdate();
+        ps.close();
+        PreparedStatement ps2 = conn.prepareStatement("DELETE FROM ov_chipkaart_product WHERE" +
+                " kaart_nummer = ?");
+        ps2.setInt(1, ovChipkaart.getKaart_id());
+        ps2.executeUpdate();
     }
 
     @Override
@@ -61,6 +76,28 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO{
         rs.close();
         st.close();
         return ovChipkaartList;
+    }
+
+    public void OVCSaveUpdateCheck(OVChipkaart ovc) throws SQLException {
+        if(findById(ovc.getKaart_id()) != null){
+            update(ovc);
+        }else{
+            save(ovc);
+        }
+    }
+
+    public OVChipkaart findById(int id) throws SQLException{
+        Statement st = conn.createStatement();
+        ResultSet rs = st.executeQuery("SELECT * FROM ov_chipkaart WHERE kaart_nummer = " + id);
+        while(rs.next()){
+            OVChipkaart ovChipkaart = new OVChipkaart(rs.getInt(1),
+                    rs.getDate(2),
+                    rs.getInt(3),
+                    rs.getDouble(4),
+                    rDAOPsql.findById(rs.getInt(5)));
+            return ovChipkaart;
+        }
+        return null;
     }
 
     public List<OVChipkaart> findAll() throws SQLException{
