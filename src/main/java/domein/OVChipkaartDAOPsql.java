@@ -61,6 +61,7 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO{
         ps.setInt(4, ovChipkaart.getReiziger().getId());
         ps.setInt(5, ovChipkaart.getKaart_id());
         ps.executeUpdate();
+        updateCP(ovChipkaart);
     }
 
     public void updateCP(OVChipkaart ovChipkaart) throws SQLException{
@@ -68,19 +69,23 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO{
                 "DELETE FROM ov_chipkaart_product WHERE kaart_nummer = ?"
         );
         ps.setInt(1, ovChipkaart.getKaart_id());
+        ps.executeUpdate();
         saveCP(ovChipkaart);
     }
 
     public void delete(OVChipkaart ovChipkaart) throws SQLException{
+        try {
+            PreparedStatement ps2 = conn.prepareStatement("DELETE FROM ov_chipkaart_product WHERE" +
+                    " kaart_nummer = ?");
+            ps2.setInt(1, ovChipkaart.getKaart_id());
+            ps2.executeUpdate();
+        }
+        catch(Exception e){}
         PreparedStatement ps = conn.prepareStatement("DELETE FROM ov_chipkaart WHERE" +
                 " kaart_nummer = ?");
         ps.setInt(1, ovChipkaart.getKaart_id());
         ps.executeUpdate();
         ps.close();
-        PreparedStatement ps2 = conn.prepareStatement("DELETE FROM ov_chipkaart_product WHERE" +
-                " kaart_nummer = ?");
-        ps2.setInt(1, ovChipkaart.getKaart_id());
-        ps2.executeUpdate();
     }
 
     @Override

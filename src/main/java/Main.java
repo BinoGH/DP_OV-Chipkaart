@@ -108,6 +108,7 @@ public class Main {
 
         Product product = new Product(7, "Weekkaart 2e klas",
                 "Een hele week onbeperkt reizen met de trein.", 150.00);
+
         pDAOPsql.save(product);
 
         ovChipkaart.addProduct(product);
@@ -129,14 +130,33 @@ public class Main {
         System.out.println("\nAlle producten van kaart_id 35283:");
         System.out.println(pDAOPsql.findByOVChipkaart(ovcDAOPsql.findById(35283)));
 
+        // PRODUCT_OVCHIP TESTS
+
+        OVChipkaart ovChipkaart3 = new OVChipkaart(10, Date.valueOf("2031-04-08"), 1,
+                30.60, r1);
+        ovChipkaart3.addProduct(product);
+        ovcDAOPsql.save(ovChipkaart3);
+
+        ovcDAOPsql.delete(ovChipkaart3);
+
         // EIND PRINTS
 
         rDAOPsql.delete(r1);
+        pDAOPsql.delete(product);
         System.out.println("\nAlle reizigers na de delete van reiziger 6:\n" +
                 (rDAOPsql.findAll()) + "\n");
         System.out.println("Alle adressen na delete:");
         System.out.println(aDAOPsql.findAll());
         System.out.println("\nAlle ovchipkaarten na delete:");
         System.out.println(ovcDAOPsql.findAll());
+
+        // DELETE COPY
+
+//        DELETE FROM ov_chipkaart_product WHERE kaart_nummer < 100;
+//        DELETE FROM product WHERE product_nummer = 7;
+//        DELETE FROM ov_chipkaart WHERE kaart_nummer < 100;
+//        DELETE FROM adres WHERE reiziger_id = 6;
+//        DELETE FROM reiziger WHERE reiziger_id = 6;
+
     }
 }
