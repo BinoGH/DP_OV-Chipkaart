@@ -1,6 +1,7 @@
 package domein;
 
 import java.sql.*;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +34,21 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO{
                 pDAOPsql.save(product);
             }
         }
+        saveCP(ovChipkaart);
+    }
+
+    public void saveCP(OVChipkaart ovChipkaart) throws SQLException{
+        for(Product product : ovChipkaart.getProductList()){
+            Date currentDate = new Date(Instant.now().toEpochMilli());
+            PreparedStatement ps = conn.prepareStatement("INSERT INTO " +
+                    "ov_chipkaart_product (kaart_nummer, product_nummer, status, " +
+                    "last_update) VALUES (?, ?, ?, ?)");
+            ps.setInt(1, ovChipkaart.getKaart_id());
+            ps.setInt(2, product.getProduct_nummer());
+            ps.setString(3, "gekocht");
+            ps.setDate(4, currentDate);
+            ps.executeUpdate();
+        }
     }
 
     public void update(OVChipkaart ovChipkaart) throws SQLException{
@@ -45,6 +61,14 @@ public class OVChipkaartDAOPsql implements OVChipkaartDAO{
         ps.setInt(4, ovChipkaart.getReiziger().getId());
         ps.setInt(5, ovChipkaart.getKaart_id());
         ps.executeUpdate();
+    }
+
+    public void updateCP(OVChipkaart ovChipkaart) throws SQLException{
+        PreparedStatement ps = conn.prepareStatement(
+                "DELETE FROM ov_chipkaart_product WHERE kaart_nummer = ?"
+        );
+        ps.setInt(1, ovChipkaart.getKaart_id());
+        saveCP(ovChipkaart);
     }
 
     public void delete(OVChipkaart ovChipkaart) throws SQLException{

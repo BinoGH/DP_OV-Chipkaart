@@ -33,21 +33,6 @@ public class ProductDAOPsql implements ProductDAO{
         for(OVChipkaart ovc : product.getOvChipkaartList()){
             ovcDAOPsql.OVCSaveUpdateCheck(ovc);
         }
-        saveCP(product);
-    }
-
-    public void saveCP(Product product) throws SQLException {
-        for(OVChipkaart ovc : product.getOvChipkaartList()){
-            Date currentDate = new Date(Instant.now().toEpochMilli());
-            PreparedStatement ps = conn.prepareStatement("INSERT INTO " +
-                    "ov_chipkaart_product (kaart_nummer, product_nummer, status, " +
-                    "last_update) VALUES (?, ?, ?, ?)");
-            ps.setInt(1, ovc.getKaart_id());
-            ps.setInt(2, product.getProduct_nummer());
-            ps.setString(3, "gekocht");
-            ps.setDate(4, currentDate);
-            ps.executeUpdate();
-        }
     }
 
     public void update(Product product) throws SQLException{
